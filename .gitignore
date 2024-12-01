@@ -41,6 +41,7 @@ $RECYCLE.BIN/
 .idea
 
 # Compilation output folders
+build/
 dist/
 tmp/
 out-tsc/

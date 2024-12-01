@@ -25,5 +25,5 @@ export interface TypeMetadata {
   /**
    * Options passed to the @Type operator for this property.
    */
-  options: TypeOptions;
+  options: TypeOptions | (() => TypeOptions);
 }

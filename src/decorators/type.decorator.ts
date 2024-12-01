@@ -9,7 +9,7 @@ import { TypeHelpOptions, TypeOptions } from '../interfaces';
  */
 export function Type(
   typeFunction?: (type?: TypeHelpOptions) => Function,
-  options: TypeOptions = {}
+  options: TypeOptions | (() => TypeOptions) = {}
 ): PropertyDecorator {
   return function (target: any, propertyName: string | Symbol): void {
     const reflectedType = (Reflect as any).getMetadata('design:type', target, propertyName);

@@ -274,6 +274,60 @@ describe('custom transformation decorator', () => {
     }).not.toThrow();
   });
 
+  it('(with a function option) should serialize json into model instance of class Person with different possibilities for type of one property (polymorphism)', () => {
+    defaultMetadataStorage.clear();
+    expect(() => {
+      const json = {
+        name: 'John Doe',
+        hobby: { __type: 'program', name: 'typescript coding', specialAbility: 'testing' },
+      };
+
+      abstract class Hobby {
+        public name: string;
+      }
+
+      class Sports extends Hobby {
+        // Empty
+      }
+
+      class Relaxing extends Hobby {
+        // Empty
+      }
+
+      class Programming extends Hobby {
+        @Transform(({ value }) => value.toUpperCase())
+        specialAbility: string;
+      }
+
+      class Person {
+        public name: string;
+
+        @Type(
+          () => Hobby,
+          () => ({
+            discriminator: {
+              property: '__type',
+              subTypes: [
+                { value: Sports, name: 'sports' },
+                { value: Relaxing, name: 'relax' },
+                { value: Programming, name: 'program' },
+              ],
+            },
+          })
+        )
+        public hobby: any;
+      }
+
+      const expectedHobby = { name: 'typescript coding', specialAbility: 'TESTING' };
+
+      const model: Person = plainToInstance(Person, json);
+      expect(model).toBeInstanceOf(Person);
+      expect(model.hobby).toBeInstanceOf(Programming);
+      expect(model.hobby).not.toHaveProperty('__type');
+      expect(model.hobby).toHaveProperty('specialAbility', 'TESTING');
+    }).not.toThrow();
+  });
+
   it('should serialize json into model instance of class Person with different types in array (polymorphism)', () => {
     defaultMetadataStorage.clear();
     expect(() => {
